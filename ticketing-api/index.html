@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 38 - Ticket Management System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        header {
+            background: #1d4ed8;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 25px auto;
+            padding: 0 16px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #00000010;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .stat {
+            text-align: center;
+            background: #eff6ff;
+            padding: 18px;
+            border-radius: 10px;
+        }
+
+        .stat h2 {
+            color: #2563eb;
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin: 14px 0 6px;
+            font-weight: bold;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 11px 17px;
+            margin-top: 14px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #1e40af;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .ticket {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .ticket h3 {
+            color: #1d4ed8;
+            margin-top: 0;
+        }
+
+        .message {
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        .success {
+            color: #15803d;
+        }
+
+        .error {
+            color: #b91c1c;
+        }
+
+        .muted {
+            color: #64748b;
+        }
+
+        @media (max-width: 600px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Ticket Management System</h1>
+    <p>Day 38 | Ticketing REST API</p>
+</header>
+
+<main class="container">
+
+    <section class="stats">
+        <div class="stat">
+            <p>Total Tickets</p>
+            <h2 id="totalTickets">0</h2>
+        </div>
+        <div class="stat">
+            <p>Open Tickets</p>
+            <h2 id="openTickets">0</h2>
+        </div>
+        <div class="stat">
+            <p>Closed Tickets</p>
+            <h2 id="closedTickets">0</h2>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Create New Ticket</h2>
+
+        <form id="ticketForm">
+            <label for="title">Ticket Title</label>
+            <input id="title" required
+                   placeholder="Example: Login issue">
+
+            <label for="description">Description</label>
+            <textarea id="description" required
+                      placeholder="Describe the issue"></textarea>
+
+            <label for="priority">Priority</label>
+            <select id="priority">
+                <option>Low</option>
+                <option selected>Medium</option>
+                <option>High</option>
+                <option>Critical</option>
+            </select>
+
+            <button id="createBtn" type="submit">Create Ticket</button>
+        </form>
+
+        <p id="createMessage" class="message" role="status"></p>
+    </section>
+
+    <section class="card">
+        <h2>Search Ticket by ID</h2>
+
+        <label for="searchId">Ticket ID</label>
+        <input id="searchId" placeholder="Enter ticket ID">
+
+        <button id="searchBtn">Search Ticket</button>
+        <div id="searchResult"></div>
+    </section>
+
+    <section class="card">
+        <h2>All Tickets</h2>
+
+        <button id="refreshBtn">Refresh Tickets</button>
+        <p id="listMessage" class="message" role="status"></p>
+        <div id="ticketList"></div>
+    </section>
+
+</main>
+
+<script>
+    // Backend file: ticket.py
+    // Run backend using: uvicorn ticket:app --reload
+    const API_URL = "http://127.0.0.1:8001";
+
+    const ticketForm = document.getElementById("ticketForm");
+    const createMessage = document.getElementById("createMessage");
+    const listMessage = document.getElementById("listMessage");
+    const ticketList = document.getElementById("ticketList");
+    const searchResult = document.getElementById("searchResult");
+
+    function showMessage(element, text, isError = false) {
+        element.textContent = text;
+        element.className = "message " +
+            (isError ? "error" : "success");
+    }
+
+    async function apiRequest(url, options = {}) {
+        const response = await fetch(url, options);
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.detail
+                    ? JSON.stringify(data.detail)
+                    : "Request failed with status " + response.status
+            );
+        }
+
+        return data;
+    }
+
+    function makeElement(tag, text, className = "") {
+        const element = document.createElement(tag);
+        element.textContent = text;
+        if (className) element.className = className;
+        return element;
+    }
+
+    function renderTicket(ticket) {
+        const card = document.createElement("div");
+        card.className = "ticket";
+
+        card.appendChild(makeElement("h3", ticket.title));
+        card.appendChild(makeElement("p", "Ticket ID: " + ticket.id));
+        card.appendChild(makeElement("p", "Description: " + ticket.description));
+        card.appendChild(makeElement("p", "Priority: " + ticket.priority));
+        card.appendChild(makeElement("p", "Status: " + ticket.status));
+
+        const label = makeElement("label", "Update status");
+        label.htmlFor = "status-" + ticket.id;
+        card.appendChild(label);
+
+        const select = document.createElement("select");
+        select.id = "status-" + ticket.id;
+
+        ["Open", "In Progress", "Resolved", "Closed"].forEach(status => {
+            const option = document.createElement("option");
+            option.value = status;
+            option.textContent = status;
+            option.selected = ticket.status === status;
+            select.appendChild(option);
+        });
+
+        card.appendChild(select);
+
+        const updateBtn = makeElement("button", "Update Status");
+
+        updateBtn.addEventListener("click", async () => {
+            updateBtn.disabled = true;
+
+            try {
+                const status = select.value;
+                await apiRequest(
+                    `${API_URL}/tickets/${encodeURIComponent(ticket.id)}?status=${encodeURIComponent(status)}`,
+                    { method: "PATCH" }
+                );
+
+                showMessage(listMessage, "Ticket status updated successfully.");
+                await loadTickets();
+            } catch (error) {
+                showMessage(listMessage, error.message, true);
+            } finally {
+                updateBtn.disabled = false;
+            }
+        });
+
+        card.appendChild(updateBtn);
+        return card;
+    }
+
+    async function loadTickets() {
+        ticketList.replaceChildren();
+        listMessage.textContent = "Loading tickets...";
+
+        try {
+            const data = await apiRequest(`${API_URL}/tickets`);
+
+            document.getElementById("totalTickets").textContent = data.total;
+            document.getElementById("openTickets").textContent =
+                data.tickets.filter(t => t.status === "Open").length;
+            document.getElementById("closedTickets").textContent =
+                data.tickets.filter(t => t.status === "Closed").length;
+
+            if (data.tickets.length === 0) {
+                ticketList.appendChild(
+                    makeElement("p", "No tickets yet. Create your first ticket.", "muted")
+                );
+            } else {
+                data.tickets.forEach(ticket => {
+                    ticketList.appendChild(renderTicket(ticket));
+                });
+            }
+
+            listMessage.textContent = "";
+        } catch (error) {
+            showMessage(
+                listMessage,
+                "Could not load tickets. Check backend server and CORS. " + error.message,
+                true
+            );
+        }
+    }
+
+    ticketForm.addEventListener("submit", async event => {
+        event.preventDefault();
+
+        const button = document.getElementById("createBtn");
+        button.disabled = true;
+
+        try {
+            const ticket = {
+                title: document.getElementById("title").value.trim(),
+                description: document.getElementById("description").value.trim(),
+                priority: document.getElementById("priority").value,
+                status: "Open"
+            };
+
+            const data = await apiRequest(`${API_URL}/tickets`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(ticket)
+            });
+
+            showMessage(
+                createMessage,
+                "Ticket created successfully! Ticket ID: " + data.ticket.id
+            );
+
+            ticketForm.reset();
+            document.getElementById("priority").value = "Medium";
+            await loadTickets();
+
+        } catch (error) {
+            showMessage(
+                createMessage,
+                "Ticket creation failed: " + error.message,
+                true
+            );
+        } finally {
+            button.disabled = false;
+        }
+    });
+
+    document.getElementById("searchBtn").addEventListener("click", async () => {
+        searchResult.replaceChildren();
+
+        const id = document.getElementById("searchId").value.trim();
+
+        if (!id) {
+            searchResult.appendChild(
+                makeElement("p", "Please enter a ticket ID.", "error")
+            );
+            return;
+        }
+
+        try {
+            const ticket = await apiRequest(
+                `${API_URL}/tickets/${encodeURIComponent(id)}`
+            );
+            searchResult.appendChild(renderTicket(ticket));
+        } catch (error) {
+            searchResult.appendChild(
+                makeElement("p", "Ticket not found or API error: " + error.message, "error")
+            );
+        }
+    });
+
+    document.getElementById("refreshBtn").addEventListener("click", loadTickets);
+
+    // Load tickets when the dashboard opens
+    loadTickets();
+</script>
+
+</body>
+</html>

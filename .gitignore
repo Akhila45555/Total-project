@@ -1,0 +1,14 @@
+.env
+firebase_key.json
+*.log
+dist/
+__pycache__/
+venv/
+node_modules/
+
+serviceaccountkey.json
+credentials.json
+*serviceaccount*.json
+client_secret*.json
+token.json
+*.pem

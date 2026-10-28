@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 37 - Agent Fail-Safe Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1d4ed8;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 24px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #00000010;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .stat {
+            padding: 18px;
+            text-align: center;
+            background: #eff6ff;
+            border-radius: 10px;
+        }
+
+        .stat h2 {
+            margin: 10px 0 0;
+            color: #2563eb;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        button {
+            border: none;
+            border-radius: 7px;
+            padding: 12px 20px;
+            cursor: pointer;
+            color: white;
+            font-size: 15px;
+        }
+
+        #startBtn {
+            background: #2563eb;
+        }
+
+        #resetBtn {
+            background: #475569;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 20px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-weight: bold;
+        }
+
+        .progress-bg {
+            width: 100%;
+            height: 14px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        #progressBar {
+            width: 0%;
+            height: 100%;
+            background: #2563eb;
+            transition: width 0.3s;
+        }
+
+        #breakerAlert {
+            display: none;
+            margin-top: 18px;
+            padding: 14px;
+            border-radius: 8px;
+            background: #fee2e2;
+            color: #b91c1c;
+            font-weight: bold;
+        }
+
+        #logs {
+            background: #0f172a;
+            color: #bbf7d0;
+            padding: 18px;
+            min-height: 150px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            font-family: monospace;
+        }
+
+        #message {
+            margin-top: 15px;
+            color: #b91c1c;
+        }
+
+        @media (max-width: 600px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Agent Fail-Safe Dashboard</h1>
+        <p class="subtitle">
+            Day 37 | Agentic Fail-Safe Counter Protection
+        </p>
+
+        <div class="card">
+            <h2>Agent Control Panel</h2>
+            <p>Maximum allowed iterations: 5</p>
+
+            <div class="controls">
+                <button id="startBtn">Start Agent</button>
+                <button id="resetBtn">Reset Agent</button>
+            </div>
+
+            <p id="message" role="alert"></p>
+        </div>
+
+        <div class="card">
+            <h2>Agent Status</h2>
+            <span id="statusBadge" class="status">Checking...</span>
+
+            <div class="stats">
+                <div class="stat">
+                    <p>Current Iteration</p>
+                    <h2 id="currentIteration">0</h2>
+                </div>
+
+                <div class="stat">
+                    <p>Maximum Iterations</p>
+                    <h2 id="maxIterations">5</h2>
+                </div>
+
+                <div class="stat">
+                    <p>Agent Status</p>
+                    <h2 id="statusText">Ready</h2>
+                </div>
+            </div>
+
+            <h3>Execution Progress</h3>
+            <div class="progress-bg">
+                <div id="progressBar"></div>
+            </div>
+            <p id="progressText">0% completed</p>
+
+            <div id="breakerAlert">
+                Circuit Breaker Triggered! Agent stopped safely.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Execution Logs</h2>
+            <pre id="logs">Waiting for agent...</pre>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8000";
+
+        const startBtn = document.getElementById("startBtn");
+        const resetBtn = document.getElementById("resetBtn");
+        const currentIteration =
+            document.getElementById("currentIteration");
+        const maxIterations =
+            document.getElementById("maxIterations");
+        const statusText = document.getElementById("statusText");
+        const statusBadge = document.getElementById("statusBadge");
+        const progressBar = document.getElementById("progressBar");
+        const progressText = document.getElementById("progressText");
+        const breakerAlert = document.getElementById("breakerAlert");
+        const logs = document.getElementById("logs");
+        const message = document.getElementById("message");
+
+        function showStatus(data) {
+            currentIteration.textContent = data.iteration_count;
+            maxIterations.textContent = data.max_iterations;
+            statusText.textContent =
+                data.stopped ? "Stopped" : "Ready";
+
+            statusBadge.textContent =
+                data.stopped ? "STOPPED" : "READY";
+
+            const percent = Math.min(
+                100,
+                (data.iteration_count / data.max_iterations) * 100
+            );
+
+            progressBar.style.width = percent + "%";
+            progressText.textContent =
+                Math.round(percent) + "% completed";
+
+            breakerAlert.style.display =
+                data.stopped ? "block" : "none";
+
+            logs.textContent = data.logs.length
+                ? data.logs.join("\n")
+                : "No execution logs yet.";
+
+            startBtn.disabled =
+                data.stopped || data.iteration_count > 0;
+        }
+
+        async function getStatus() {
+            try {
+                const response = await fetch(
+                    `${API_URL}/agent/status`
+                );
+
+                if (!response.ok) {
+                    throw new Error("Could not get agent status.");
+                }
+
+                const data = await response.json();
+                showStatus(data);
+                message.textContent = "";
+            } catch (error) {
+                message.textContent =
+                    "Server connect కాలేదు. server.py run చేయండి.";
+                statusBadge.textContent = "SERVER OFFLINE";
+            }
+        }
+
+        startBtn.addEventListener("click", async () => {
+            startBtn.disabled = true;
+            message.textContent = "Agent running...";
+
+            try {
+                const response = await fetch(
+                    `${API_URL}/agent/start`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            max_iterations: 5
+                        })
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error("Agent could not start.");
+                }
+
+                const data = await response.json();
+                showStatus(data);
+                message.textContent = "Agent execution completed.";
+            } catch (error) {
+                message.textContent =
+                    "Error: Server run అవుతుందో లేదో check చేయండి.";
+                startBtn.disabled = false;
+            }
+        });
+
+        resetBtn.addEventListener("click", async () => {
+            resetBtn.disabled = true;
+            message.textContent = "Resetting agent...";
+
+            try {
+                const response = await fetch(
+                    `${API_URL}/agent/reset`,
+                    { method: "POST" }
+                );
+
+                if (!response.ok) {
+                    throw new Error("Reset failed.");
+                }
+
+                const data = await response.json();
+                showStatus(data);
+                message.textContent = "Agent reset successfully.";
+            } catch (error) {
+                message.textContent =
+                    "Reset failed. Check the backend server.";
+            } finally {
+                resetBtn.disabled = false;
+            }
+        });
+
+        getStatus();
+    </script>
+</body>
+</html>

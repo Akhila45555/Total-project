@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Snipe-IT Asset Assistant</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #1f2937;
+            color: white;
+            padding: 20px 35px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .description {
+            color: #6b7280;
+        }
+
+        .chat-box {
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            padding: 18px;
+            background: #f9fafb;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 13px 16px;
+            margin: 10px 0;
+            border-radius: 10px;
+            line-height: 1.5;
+        }
+
+        .bot {
+            background: #e5e7eb;
+        }
+
+        .user {
+            background: #dbeafe;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        #sendButton {
+            padding: 0 25px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .examples {
+            margin-top: 20px;
+        }
+
+        .examples button {
+            border: none;
+            background: #64748b;
+            color: white;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .asset-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+        }
+
+        .asset-table th {
+            background: #1f2937;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .asset-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .available {
+            color: green;
+            font-weight: bold;
+        }
+
+        .assigned {
+            color: red;
+            font-weight: bold;
+        }
+
+        @media (max-width: 700px) {
+            .input-area {
+                flex-direction: column;
+            }
+
+            #sendButton {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>🖥️ Snipe-IT Asset Assistant</h1>
+</div>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>IT Asset Management</h2>
+
+        <p class="description">
+            Ask about company IT assets such as laptops,
+            desktops, monitors and assignment status.
+        </p>
+
+        <div id="chatBox" class="chat-box">
+
+            <div class="message bot">
+                Hello! I can help you manage IT assets using Snipe-IT.
+                You can ask about available assets, assigned assets,
+                or a specific asset.
+            </div>
+
+        </div>
+
+        <div class="input-area">
+
+            <input
+                type="text"
+                id="userInput"
+                placeholder="Ask about an IT asset..."
+            >
+
+            <button id="sendButton">
+                Send
+            </button>
+
+        </div>
+
+        <div class="examples">
+
+            <strong>Examples:</strong>
+
+            <button onclick="setQuestion('Show all available laptops')">
+                Available laptops
+            </button>
+
+            <button onclick="setQuestion('Find asset LAP-001')">
+                Find asset
+            </button>
+
+            <button onclick="setQuestion('Show assigned assets')">
+                Assigned assets
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /*
+       Sample Snipe-IT asset data
+       for frontend implementation/demo.
+    */
+
+    const assets = [
+
+        {
+            asset_tag: "LAP-001",
+            model: "Lenovo V15",
+            category: "Laptop",
+            status: "Available",
+            assigned_to: "-"
+        },
+
+        {
+            asset_tag: "LAP-002",
+            model: "HP ProBook 450",
+            category: "Laptop",
+            status: "Available",
+            assigned_to: "-"
+        },
+
+        {
+            asset_tag: "LAP-003",
+            model: "Lenovo ThinkPad E14",
+            category: "Laptop",
+            status: "Assigned",
+            assigned_to: "Employee 1"
+        },
+
+        {
+            asset_tag: "LAP-004",
+            model: "HP 15",
+            category: "Laptop",
+            status: "Available",
+            assigned_to: "-"
+        },
+
+        {
+            asset_tag: "LAP-005",
+            model: "Lenovo V14",
+            category: "Laptop",
+            status: "Assigned",
+            assigned_to: "Employee 2"
+        },
+
+        {
+            asset_tag: "MON-001",
+            model: "Dell 24 Monitor",
+            category: "Monitor",
+            status: "Available",
+            assigned_to: "-"
+        },
+
+        {
+            asset_tag: "DES-001",
+            model: "Dell OptiPlex",
+            category: "Desktop",
+            status: "Assigned",
+            assigned_to: "Employee 3"
+        }
+
+    ];
+
+
+    const input =
+        document.getElementById("userInput");
+
+    const button =
+        document.getElementById("sendButton");
+
+    const chatBox =
+        document.getElementById("chatBox");
+
+
+    function setQuestion(question) {
+
+        input.value = question;
+
+        input.focus();
+
+    }
+
+
+    function addMessage(text, type) {
+
+        const message =
+            document.createElement("div");
+
+        message.className =
+            "message " + type;
+
+        message.textContent =
+            text;
+
+        chatBox.appendChild(message);
+
+        chatBox.scrollTop =
+            chatBox.scrollHeight;
+
+    }
+
+
+    function showAssets(data) {
+
+        const table =
+            document.createElement("table");
+
+        table.className =
+            "asset-table";
+
+
+        table.innerHTML = `
+
+            <thead>
+
+                <tr>
+                    <th>Asset Tag</th>
+                    <th>Model</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Assigned To</th>
+                </tr>
+
+            </thead>
+
+            <tbody></tbody>
+
+        `;
+
+
+        const tbody =
+            table.querySelector("tbody");
+
+
+        data.forEach(asset => {
+
+            const row =
+                document.createElement("tr");
+
+
+            const statusClass =
+                asset.status === "Available"
+                    ? "available"
+                    : "assigned";
+
+
+            row.innerHTML = `
+
+                <td>${asset.asset_tag}</td>
+
+                <td>${asset.model}</td>
+
+                <td>${asset.category}</td>
+
+                <td class="${statusClass}">
+                    ${asset.status}
+                </td>
+
+                <td>${asset.assigned_to}</td>
+
+            `;
+
+
+            tbody.appendChild(row);
+
+        });
+
+
+        chatBox.appendChild(table);
+
+        chatBox.scrollTop =
+            chatBox.scrollHeight;
+
+    }
+
+
+    function processQuestion(question) {
+
+        const q =
+            question.toLowerCase();
+
+
+        let result = [];
+
+
+        /*
+         * Specific asset search
+         */
+
+        const specificAsset =
+            assets.find(asset =>
+                q.includes(
+                    asset.asset_tag.toLowerCase()
+                )
+            );
+
+
+        if (specificAsset) {
+
+            result = [specificAsset];
+
+        }
+
+
+        /*
+         * Available assets
+         */
+
+        else if (
+            q.includes("available") ||
+            q.includes("ready")
+        ) {
+
+            result =
+                assets.filter(asset =>
+                    asset.status === "Available"
+                );
+
+        }
+
+
+        /*
+         * Assigned assets
+         */
+
+        else if (
+            q.includes("assigned")
+        ) {
+
+            result =
+                assets.filter(asset =>
+                    asset.status === "Assigned"
+                );
+
+        }
+
+
+        /*
+         * Laptop search
+         */
+
+        else if (
+            q.includes("laptop") ||
+            q.includes("laptops")
+        ) {
+
+            result =
+                assets.filter(asset =>
+                    asset.category === "Laptop"
+                );
+
+        }
+
+
+        /*
+         * Desktop search
+         */
+
+        else if (
+            q.includes("desktop") ||
+            q.includes("desktops")
+        ) {
+
+            result =
+                assets.filter(asset =>
+                    asset.category === "Desktop"
+                );
+
+        }
+
+
+        /*
+         * Monitor search
+         */
+
+        else if (
+            q.includes("monitor") ||
+            q.includes("monitors")
+        ) {
+
+            result =
+                assets.filter(asset =>
+                    asset.category === "Monitor"
+                );
+
+        }
+
+
+        /*
+         * All assets
+         */
+
+        else if (
+            q.includes("asset") ||
+            q.includes("assets") ||
+            q.includes("all")
+        ) {
+
+            result = assets;
+
+        }
+
+
+        else {
+
+            addMessage(
+                "Please ask about laptops, desktops, monitors, available assets, assigned assets, or a specific asset.",
+                "bot"
+            );
+
+            return;
+
+        }
+
+
+        if (result.length === 0) {
+
+            addMessage(
+                "No matching assets found.",
+                "bot"
+            );
+
+            return;
+
+        }
+
+
+        addMessage(
+            result.length +
+            " asset(s) found:",
+            "bot"
+        );
+
+
+        showAssets(result);
+
+    }
+
+
+    function sendMessage() {
+
+        const question =
+            input.value.trim();
+
+
+        if (!question) {
+            return;
+        }
+
+
+        addMessage(
+            question,
+            "user"
+        );
+
+
+        input.value = "";
+
+
+        processQuestion(question);
+
+    }
+
+
+    button.addEventListener(
+        "click",
+        sendMessage
+    );
+
+
+    input.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                sendMessage();
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>

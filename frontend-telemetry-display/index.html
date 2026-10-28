@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Day 28 - Frontend Telemetry</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #status {
+            text-align: center;
+            font-weight: bold;
+            margin: 20px;
+        }
+
+        #alerts {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+            border-left: 7px solid red;
+        }
+
+        .title {
+            font-size: 21px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .details {
+            line-height: 1.8;
+        }
+
+        .waiting {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <h1>Real-Time Proctoring Telemetry</h1>
+
+    <div id="status">
+        Connecting to Firebase...
+    </div>
+
+    <div id="alerts">
+
+        <div class="waiting">
+            Waiting for alerts...
+        </div>
+
+    </div>
+
+
+    <!-- Firebase -->
+
+    <script type="module">
+
+        import { initializeApp }
+        from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+        import {
+            getFirestore,
+            collection,
+            onSnapshot,
+            query,
+            orderBy
+        }
+        from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+           const firebaseConfig = {
+            apiKey: "AIzaSyAlBMsO0n4PcFbNPGxc7-CNi2V0qCjbk6M",
+             authDomain: "fir-telemetry-9ba8c.firebaseapp.com",
+              projectId: "fir-telemetry-9ba8c",
+             storageBucket: "fir-telemetry-9ba8c.firebasestorage.app",
+             messagingSenderId: "53857574257",
+              appId: "1:53857574257:web:144b4db5c062e90290ead0",
+             measurementId: "G-YSFQ030B1N"
+         };
+
+        // =================================================
+        // CONNECT FIREBASE
+        // =================================================
+
+        const app = initializeApp(firebaseConfig);
+
+        const db = getFirestore(app);
+
+        document.getElementById("status").innerText =
+            "🟢 Firebase Connected";
+
+
+        // =================================================
+        // READ DAY 27 TELEMETRY
+        // =================================================
+
+        const telemetryCollection =
+            collection(db, "telemetry_logs");
+
+
+        const telemetryQuery =
+            query(
+                telemetryCollection,
+                orderBy("timestamp", "desc")
+            );
+
+
+        // =================================================
+        // REAL-TIME LISTENER
+        // =================================================
+
+        onSnapshot(
+
+            telemetryQuery,
+
+            (snapshot) => {
+
+                const alerts =
+                    document.getElementById("alerts");
+
+                alerts.innerHTML = "";
+
+
+                if (snapshot.empty) {
+
+                    alerts.innerHTML = `
+                        <div class="waiting">
+                            No telemetry alerts yet.
+                        </div>
+                    `;
+
+                    return;
+                }
+
+
+                snapshot.forEach((doc) => {
+
+                    const data = doc.data();
+
+
+                    const candidate =
+                        data.candidate_id || "Unknown";
+
+                    const alertType =
+                        data.alert_type || "Unknown";
+
+                    const severity =
+                        data.severity || "Unknown";
+
+                    const source =
+                        data.source || "Unknown";
+
+                    const message =
+                        data.message || "No message";
+
+
+                    let time = "Unknown";
+
+
+                    if (data.timestamp) {
+
+                        time =
+                            data.timestamp
+                            .toDate()
+                            .toLocaleString();
+
+                    }
+
+
+                    // Create warning card
+
+                    const card =
+                        document.createElement("div");
+
+                    card.className = "card";
+
+
+                    card.innerHTML = `
+
+                        <div class="title">
+                            ⚠️ ${alertType}
+                        </div>
+
+                        <div class="details">
+
+                            <b>Candidate:</b>
+                            ${candidate}
+                            <br>
+
+                            <b>Severity:</b>
+                            ${severity}
+                            <br>
+
+                            <b>Source:</b>
+                            ${source}
+                            <br>
+
+                            <b>Message:</b>
+                            ${message}
+                            <br>
+
+                            <b>Time:</b>
+                            ${time}
+
+                        </div>
+
+                    `;
+
+
+                    alerts.appendChild(card);
+
+                });
+
+            },
+
+
+            (error) => {
+
+                console.error(error);
+
+                document.getElementById("status").innerText =
+                    "🔴 Firebase Error";
+
+            }
+
+        );
+
+    </script>
+
+</body>
+
+</html>

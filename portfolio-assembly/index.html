@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Akhila Kethireddy | Technical Portfolio</title>
+
+<style>
+:root {
+  --bg:#090d1a;
+  --panel:#121e33;
+  --teal:#5eead4;
+  --purple:#b6a0ff;
+  --text:#edf2ff;
+  --muted:#aab8cc;
+  --border:#293b58;
+}
+*{box-sizing:border-box;margin:0;padding:0;scroll-behavior:smooth}
+body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+.container{width:91%;max-width:1200px;margin:auto}
+header{position:sticky;top:0;z-index:10;background:#10182bf5;border-bottom:1px solid var(--border);padding:14px 4.5%;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{color:var(--teal);font-size:21px;font-weight:bold}
+nav{display:flex;gap:13px;flex-wrap:wrap}
+nav a{color:#e3eafa;text-decoration:none;font-size:12px}
+nav a:hover{color:var(--teal)}
+section{padding:58px 0;scroll-margin-top:75px}
+.hero{min-height:440px;display:grid;grid-template-columns:1.2fr .8fr;gap:35px;align-items:center}
+.eyebrow,.kicker{color:var(--teal);font-size:11px;font-weight:bold;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:clamp(38px,6vw,62px);line-height:1.15;margin:18px 0}
+.gradient{background:linear-gradient(90deg,var(--teal),var(--purple));background-clip:text;color:transparent}
+.subtitle,.description,.muted{color:var(--muted)}
+.button{display:inline-block;margin:16px 7px 0 0;padding:10px 15px;border:0;border-radius:8px;background:var(--teal);color:#07111f;text-decoration:none;font-weight:bold;font-size:12px;cursor:pointer}
+.button.secondary{background:#192741;color:white;border:1px solid var(--border)}
+.profile{padding:28px;text-align:center;border:1px solid var(--border);border-radius:22px;background:linear-gradient(145deg,#192741,#11182b);box-shadow:0 15px 40px #0004}
+.avatar{width:90px;height:90px;margin:0 auto 15px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--teal),var(--purple));color:#07111f;font-size:29px;font-weight:bold}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:20px}
+.stat{padding:12px 5px;border:1px solid var(--border);border-radius:10px}
+.stat strong{display:block;color:var(--teal);font-size:23px}
+.stat span{font-size:11px;color:var(--muted)}
+.section-title{font-size:clamp(27px,4vw,38px);margin:8px 0}
+.section-description{max-width:850px;color:var(--muted);font-size:14px;margin-bottom:25px}
+.overview-grid,.task-grid,.project-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+.overview-card,.task-card,.project-card,.skill-panel{padding:21px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(145deg,#17243c,#101729);transition:.25s}
+.overview-card:hover,.task-card:hover,.project-card:hover,.skill-panel:hover{transform:translateY(-4px);border-color:var(--teal)}
+.overview-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;background:#5eead415;font-size:23px;margin-bottom:12px}
+.overview-card h3,.project-card h3{color:var(--teal);font-size:16px;margin-bottom:8px}
+.overview-card p,.overview-card li,.project-card p{color:var(--muted);font-size:12px}
+.overview-card ul{padding-left:18px;margin:10px 0}
+.tag{display:inline-block;background:#233550;color:#dce8f7;padding:5px 8px;margin:3px 3px 0 0;border-radius:6px;font-size:10px}
+.dashboard,.architecture{padding:22px;border:1px solid var(--border);border-radius:18px;background:#0e1526}
+.dash-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.count{color:var(--teal);font-size:12px}
+.filters{margin:18px 0}
+input{width:100%;padding:13px;border:1px solid #34425e;border-radius:9px;background:#151f33;color:white;font-size:14px}
+input:focus{outline:1px solid var(--teal)}
+.task-card{display:flex;flex-direction:column;min-height:225px;padding:18px}
+.task-number{color:var(--teal);font-size:11px;font-weight:bold;letter-spacing:1px;margin-bottom:8px}
+.task-card h3{font-size:15px;margin-bottom:8px}
+.task-card p{color:var(--muted);font-size:12px}
+.task-card .tags{margin-top:auto;padding-top:10px}
+.details-btn{margin-top:12px;padding:9px;border:1px solid var(--border);border-radius:8px;background:#ffffff06;color:var(--teal);cursor:pointer}
+.details-btn:hover{background:#5eead415}
+.empty{display:none;text-align:center;padding:28px;color:var(--muted)}
+.project-card{padding:24px}
+.project-card p{margin:10px 0}
+.architecture-flow{display:flex;flex-wrap:wrap;justify-content:center;align-items:stretch;gap:10px}
+.arch-node{flex:1 1 140px;max-width:190px;min-height:135px;padding:14px 10px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border:1px solid #5eead455;border-radius:12px;background:#172b3b}
+.arch-node h3{font-size:13px;color:var(--teal);margin:7px 0}
+.arch-node p{font-size:11px;color:var(--muted)}
+.arrow{align-self:center;color:var(--teal);font-size:22px}
+.layer-list{display:grid;gap:11px;margin-top:22px}
+.layer{display:grid;grid-template-columns:140px 1fr;gap:15px;padding:15px;border:1px solid var(--border);border-radius:12px;background:#ffffff04}
+.layer-number{color:var(--teal);font-size:11px;font-weight:bold}
+.layer h3{font-size:14px}
+.layer p{font-size:12px;color:var(--muted);margin-top:4px}
+.workflow-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:22px}
+.workflow-card{padding:20px;border:1px solid var(--border);border-radius:15px;background:var(--panel)}
+.workflow-card h3{font-size:15px;color:var(--purple);margin-bottom:14px}
+.workflow-step{padding:10px;text-align:center;background:#192740;border:1px solid #2c405f;border-radius:9px;font-size:12px}
+.workflow-arrow{text-align:center;color:var(--teal);padding:4px}
+.note{margin-top:16px;padding:13px;border-left:3px solid #fcd34d;border-radius:7px;background:#fcd34d0a;color:var(--muted);font-size:12px}
+.skill-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.skill-panel h3{font-size:16px;color:var(--teal);margin-bottom:8px}
+.skill-panel p{font-size:12px;color:var(--muted);margin-bottom:15px}
+.skill-chips{display:flex;flex-wrap:wrap;gap:8px}
+.skill-chip{padding:8px 11px;background:#1d2e49;border:1px solid #344966;border-radius:8px;color:#e2eafa;font-size:11px}
+.skill-chip:hover{border-color:var(--teal);color:var(--teal)}
+.skills-footer{margin-top:20px;padding:17px;border:1px solid #5eead42b;border-radius:13px;background:#5eead409;color:#c7d4e8;font-size:13px}
+.contact{padding:30px;text-align:center;border:1px solid var(--border);border-radius:18px;background:linear-gradient(120deg,#14233a,#211d3b)}
+footer{text-align:center;padding:25px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}
+.modal{display:none;position:fixed;inset:0;z-index:50;justify-content:center;align-items:center;padding:20px;background:#030611dd}
+.modal.open{display:flex}
+.modal-content{width:min(600px,100%);max-height:85vh;overflow-y:auto;padding:25px;border:1px solid #43516d;border-radius:18px;background:#111a2e}
+.modal-content h2{color:var(--teal);margin:12px 0}
+.modal-content h3{margin-top:15px}
+.modal-content p,.modal-content li{color:var(--muted);font-size:13px}
+.modal-content ul{padding-left:20px;margin:10px 0}
+.close{float:right;padding:7px 12px;border:0;border-radius:8px;background:#263650;color:white;cursor:pointer}
+@media(max-width:950px){
+ .hero{grid-template-columns:1fr}
+ .overview-grid,.task-grid,.project-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .arch-node{max-width:none}
+}
+@media(max-width:600px){
+ header{position:relative}
+ nav{gap:9px}
+ nav a{font-size:11px}
+ .overview-grid,.task-grid,.project-grid,.workflow-grid,.skill-groups{grid-template-columns:1fr}
+ .architecture-flow{flex-direction:column}
+ .arch-node{width:100%}
+ .arrow{transform:rotate(90deg)}
+ .layer{grid-template-columns:1fr;gap:5px}
+}
+@media print{
+ header,.filters,.details-btn,.modal,.button{display:none!important}
+ body{background:white;color:black}
+ section{padding:20px 0}
+ .overview-grid,.task-grid,.project-grid{grid-template-columns:repeat(2,1fr)}
+ .overview-card,.task-card,.project-card,.skill-panel,.architecture,.workflow-card{background:white;color:black;break-inside:avoid}
+ .overview-card p,.overview-card li,.task-card p,.project-card p,.skill-panel p{color:#333}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">AK | PORTFOLIO</div>
+  <nav>
+    <a href="#about">About</a>
+    <a href="#overview">Overview</a>
+    <a href="#tasks">Tasks</a>
+    <a href="#projects">Projects</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#skills">Skills</a>
+  </nav>
+  <button class="button" onclick="window.print()">Save PDF</button>
+</header>
+
+<main>
+<section class="container hero" id="about">
+  <div>
+    <p class="eyebrow">PYTHON · AI · AUTOMATION</p>
+    <h1>Building useful<br><span class="gradient">workflows with AI.</span></h1>
+    <p class="subtitle">
+      Hi, I'm <strong>Akhila Kethireddy</strong>. Welcome to my
+      technical portfolio showcasing training tasks and projects
+      across Python, API integration, AI workflows, data validation,
+      activity monitoring, computer vision and networking.
+    </p>
+    <a class="button" href="#tasks">Explore Tasks ↓</a>
+    <a class="button secondary" href="#projects">Major Projects</a>
+  </div>
+  <div class="profile">
+    <div class="avatar">AK</div>
+    <h2>Akhila Kethireddy</h2>
+    <p class="subtitle">Python & AI Workflow Portfolio</p>
+    <div class="stats">
+      <div class="stat"><strong>40</strong><span>Task Entries</span></div>
+      <div class="stat"><strong>02</strong><span>Major Projects</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="container" id="overview">
+  <p class="kicker">Portfolio overview</p>
+  <h2 class="section-title">Technical Overview</h2>
+  <p class="section-description">
+    An overview of technical areas represented across the training tasks
+    and major projects.
+  </p>
+  <div class="overview-grid">
+    <article class="overview-card">
+      <div class="overview-icon">🐍</div>
+      <h3>Python Development & APIs</h3>
+      <p>Build scripts, process responses and connect external services.</p>
+      <ul><li>API parsing</li><li>Error handling</li><li>Pipeline integration</li><li>Execution logging</li></ul>
+      <span class="tag">Python</span><span class="tag">REST APIs</span><span class="tag">Requests</span>
+    </article>
+    <article class="overview-card">
+      <div class="overview-icon">✧</div>
+      <h3>Generative AI & Speech</h3>
+      <p>Explore prompts, language models and speech-processing workflows.</p>
+      <ul><li>Prompt templates</li><li>LLM tool calling</li><li>Whisper transcription</li><li>Azure Speech SDK</li></ul>
+      <span class="tag">LLM</span><span class="tag">Whisper</span><span class="tag">Azure Speech</span>
+    </article>
+    <article class="overview-card">
+      <div class="overview-icon">▤</div>
+      <h3>Data Processing & Validation</h3>
+      <p>Transform records and check data quality.</p>
+      <ul><li>JSON and XML</li><li>Schema alignment</li><li>Batch validation</li><li>PII protection</li></ul>
+      <span class="tag">JSON</span><span class="tag">XML</span><span class="tag">Regex</span>
+    </article>
+    <article class="overview-card">
+      <div class="overview-icon">🗄️</div>
+      <h3>Backend & Data Storage</h3>
+      <p>Explore API services, storage and telemetry.</p>
+      <ul><li>SheetDB integration</li><li>Firebase / Firestore</li><li>Supabase integration</li><li>Audit logs</li></ul>
+      <span class="tag">FastAPI</span><span class="tag">Firebase</span><span class="tag">Supabase</span>
+    </article>
+    <article class="overview-card">
+      <div class="overview-icon">◉</div>
+      <h3>Monitoring & Computer Vision</h3>
+      <p>Explore activity events and computer-vision processing.</p>
+      <ul><li>ActivityWatch metrics</li><li>Focus timelines</li><li>Facial landmarks</li><li>Gaze calculations</li></ul>
+      <span class="tag">ActivityWatch</span><span class="tag">OpenCV</span><span class="tag">Telemetry</span>
+    </article>
+    <article class="overview-card">
+      <div class="overview-icon">⚙️</div>
+      <h3>Automation & Integration</h3>
+      <p>Connect supported services into repeatable workflows.</p>
+      <ul><li>Apify data collection</li><li>Resume matching</li><li>Ticketing APIs</li><li>AI help desk</li></ul>
+      <span class="tag">Automation</span><span class="tag">AI Agents</span><span class="tag">APIs</span>
+    </article>
+  </div>
+</section>
+
+<section class="container" id="tasks">
+  <p class="kicker">Training portfolio</p>
+  <h2 class="section-title">Day 1–40 Tasks</h2>
+  <p class="section-description">
+    Search by task name or technology and open any task to see its
+    summary and typical workflow.
+  </p>
+  <div class="dashboard">
+    <div class="dash-top">
+      <h3>Training Task Dashboard</h3>
+      <span class="count" id="resultCount">40 tasks</span>
+    </div>
+    <div class="filters">
+      <input id="search" type="search" placeholder="Search Python, Firebase, OpenCV, API..." aria-label="Search tasks">
+    </div>
+    <div class="task-grid" id="taskGrid"></div>
+    <div class="empty" id="empty">No matching tasks found.</div>
+    <p class="note">
+      Day 40 Outline VPN is intentionally excluded from the task list.
+      VPN appears separately in Major Projects. Confirm provisional
+      task titles against the original training folders before publishing.
+    </p>
+  </div>
+</section>
+
+<section class="container" id="projects">
+  <p class="kicker">Featured work</p>
+  <h2 class="section-title">Major Projects</h2>
+  <p class="section-description">Two separate project summaries.</p>
+  <div class="project-grid">
+    <article class="project-card">
+      <div class="overview-icon">📊</div>
+      <h3>01. Team Activity Monitoring System</h3>
+      <p>Collect activity events, process activity metrics, store records and present summaries on a dashboard.</p>
+      <p><strong>Workflow:</strong> ActivityWatch → Python Tracker → FastAPI → Supabase → Dashboard.</p>
+      <span class="tag">Python</span><span class="tag">ActivityWatch</span><span class="tag">FastAPI</span><span class="tag">Supabase</span>
+      <button class="details-btn" onclick="openProject('team')">View Workflow ↗</button>
+    </article>
+    <article class="project-card">
+      <div class="overview-icon">🔐</div>
+      <h3>02. VPN Configuration & Security</h3>
+      <p>A separate project summary for VPN setup, configuration, connection testing and secure network access.</p>
+      <p><strong>Workflow:</strong> Requirements → Configuration → Testing → Security Checks.</p>
+      <span class="tag">VPN</span><span class="tag">Networking</span><span class="tag">Security</span>
+      <button class="details-btn" onclick="openProject('vpn')">View Workflow ↗</button>
+    </article>
+  </div>
+</section>
+
+<section class="container" id="architecture">
+  <p class="kicker">System design</p>
+  <h2 class="section-title">Overall System Architecture</h2>
+  <p class="section-description">
+    A conceptual overview of the input, processing, validation, storage
+    and output stages represented across the task workflows.
+  </p>
+  <div class="architecture">
+    <div class="architecture-flow">
+      <div class="arch-node"><div>📥</div><h3>1. Input Sources</h3><p>APIs, resumes, audio, video, activity events</p></div>
+      <div class="arrow">➜</div>
+      <div class="arch-node"><div>🐍</div><h3>2. Processing & AI</h3><p>Python, prompts, speech processing, automation</p></div>
+      <div class="arrow">➜</div>
+      <div class="arch-node"><div>✓</div><h3>3. Validation</h3><p>JSON, schema, regex, error and privacy checks</p></div>
+      <div class="arrow">➜</div>
+      <div class="arch-node"><div>🗄️</div><h3>4. Backend & Storage</h3><p>FastAPI, SheetDB, Firebase, Supabase</p></div>
+      <div class="arrow">➜</div>
+      <div class="arch-node"><div>📊</div><h3>5. Output</h3><p>Records, logs, metrics and dashboards</p></div>
+    </div>
+
+    <div class="layer-list">
+      <div class="layer"><div class="layer-number">LAYER 01</div><div><h3>Input & Data Sources</h3><p>API responses, candidate data, audio/video, activity events and user requests.</p></div></div>
+      <div class="layer"><div class="layer-number">LAYER 02</div><div><h3>Processing & AI</h3><p>Python scripts, REST API calls, prompt templates, speech processing and computer vision.</p></div></div>
+      <div class="layer"><div class="layer-number">LAYER 03</div><div><h3>Validation & Safeguards</h3><p>Structured data checks, error handling, duplicate checks, privacy masking and fail-safe logic.</p></div></div>
+      <div class="layer"><div class="layer-number">LAYER 04</div><div><h3>Backend & Storage</h3><p>Configured backend endpoints, databases, audit logs and telemetry records.</p></div></div>
+      <div class="layer"><div class="layer-number">LAYER 05</div><div><h3>Output & Monitoring</h3><p>Structured results, transcripts, activity metrics, validation logs and dashboards.</p></div></div>
+    </div>
+    <p class="note">This is a conceptual architecture, not a claim that every service is connected in one live production system.</p>
+  </div>
+
+  <h2 class="section-title" style="margin-top:32px">Project Workflows</h2>
+  <div class="workflow-grid">
+    <article class="workflow-card"><h3>01. Candidate Data Pipeline</h3><div class="workflow-step">Candidate Input</div><div class="workflow-arrow">↓</div><div class="workflow-step">Parse & Validate</div><div class="workflow-arrow">↓</div><div class="workflow-step">Duplicate / Error Checks</div><div class="workflow-arrow">↓</div><div class="workflow-step">Configured Storage & Audit Logs</div></article>
+    <article class="workflow-card"><h3>02. AI & Speech Workflow</h3><div class="workflow-step">Text or Audio Input</div><div class="workflow-arrow">↓</div><div class="workflow-step">Prompt / Speech Processing</div><div class="workflow-arrow">↓</div><div class="workflow-step">Parse and Evaluate Output</div><div class="workflow-arrow">↓</div><div class="workflow-step">Structured Result</div></article>
+    <article class="workflow-card"><h3>03. Team Activity Monitoring</h3><div class="workflow-step">ActivityWatch Events</div><div class="workflow-arrow">↓</div><div class="workflow-step">Python Tracker</div><div class="workflow-arrow">↓</div><div class="workflow-step">FastAPI Backend</div><div class="workflow-arrow">↓</div><div class="workflow-step">Supabase & Dashboard</div></article>
+    <article class="workflow-card"><h3>04. AI Help Desk</h3><div class="workflow-step">User Request</div><div class="workflow-arrow">↓</div><div class="workflow-step">Intent / Tool Selection</div><div class="workflow-arrow">↓</div><div class="workflow-step">Validate Action</div><div class="workflow-arrow">↓</div><div class="workflow-step">Response / Ticket Result</div></article>
+    <article class="workflow-card"><h3>05. VPN Workflow</h3><div class="workflow-step">Identify Requirements</div><div class="workflow-arrow">↓</div><div class="workflow-step">VPN Configuration</div><div class="workflow-arrow">↓</div><div class="workflow-step">Connection Testing</div><div class="workflow-arrow">↓</div><div class="workflow-step">Connectivity & Security Checks</div></article>
+    <article class="workflow-card"><h3>06. Monitoring & Computer Vision</h3><div class="workflow-step">Audio / Video / Activity Input</div><div class="workflow-arrow">↓</div><div class="workflow-step">Process Frames or Events</div><div class="workflow-arrow">↓</div><div class="workflow-step">Calculate Metrics / Detect Features</div><div class="workflow-arrow">↓</div><div class="workflow-step">Review Results</div></article>
+  </div>
+</section>
+
+<section class="container" id="skills">
+  <p class="kicker">Technical toolkit</p>
+  <h2 class="section-title">Skills & Technologies</h2>
+  <p class="section-description">Technologies and concepts explored across the training tasks and projects.</p>
+  <div class="skill-groups">
+    <article class="skill-panel"><h3>🐍 Programming & Development</h3><p>Programming and frontend development.</p><div class="skill-chips"><span class="skill-chip">Python</span><span class="skill-chip">HTML5</span><span class="skill-chip">CSS3</span><span class="skill-chip">JavaScript</span><span class="skill-chip">Git</span><span class="skill-chip">GitHub</span></div></article>
+    <article class="skill-panel"><h3>✧ AI & Speech Technologies</h3><p>Prompting, model integrations and speech workflows.</p><div class="skill-chips"><span class="skill-chip">LLM Prompting</span><span class="skill-chip">OpenRouter</span><span class="skill-chip">Tool Calling</span><span class="skill-chip">Whisper</span><span class="skill-chip">Azure Speech SDK</span><span class="skill-chip">Speech Evaluation</span></div></article>
+    <article class="skill-panel"><h3>🔌 APIs & Backend</h3><p>Connecting services and building backend workflows.</p><div class="skill-chips"><span class="skill-chip">REST APIs</span><span class="skill-chip">Python Requests</span><span class="skill-chip">FastAPI</span><span class="skill-chip">JSON</span><span class="skill-chip">XML</span><span class="skill-chip">python-dotenv</span></div></article>
+    <article class="skill-panel"><h3>🗄️ Data & Databases</h3><p>Data validation, storage and telemetry.</p><div class="skill-chips"><span class="skill-chip">Firebase / Firestore</span><span class="skill-chip">Supabase</span><span class="skill-chip">SheetDB</span><span class="skill-chip">Google Schema</span><span class="skill-chip">Batch Processing</span><span class="skill-chip">Audit Logging</span></div></article>
+    <article class="skill-panel"><h3>👁️ Monitoring & Computer Vision</h3><p>Activity events, focus metrics and visual processing.</p><div class="skill-chips"><span class="skill-chip">ActivityWatch</span><span class="skill-chip">OpenCV</span><span class="skill-chip">Facial Landmarks</span><span class="skill-chip">Iris Tracking</span><span class="skill-chip">Gaze Calculations</span><span class="skill-chip">Telemetry</span></div></article>
+    <article class="skill-panel"><h3>⚙️ Automation & Security</h3><p>Automated workflows, privacy and networking concepts.</p><div class="skill-chips"><span class="skill-chip">Apify</span><span class="skill-chip">Reftab</span><span class="skill-chip">AI Help Desk</span><span class="skill-chip">PII Masking</span><span class="skill-chip">Fail-Safe Logic</span><span class="skill-chip">VPN / Networking</span></div></article>
+  </div>
+  <div class="skills-footer"><strong>Technical focus:</strong> Python development, API integration, AI-assisted workflows, structured data processing, monitoring and system integration.</div>
+</section>
+
+<section class="container" id="contact">
+  <div class="contact">
+    <p class="kicker">Thank you for visiting</p>
+    <h2 class="section-title">Akhila Kethireddy</h2>
+    <p class="description">Python & AI Workflow Portfolio</p>
+    <p class="description">Add your verified GitHub, LinkedIn and email links here.</p>
+    <a class="button" href="#about">Back to Top ↑</a>
+  </div>
+</section>
+</main>
+
+<footer>
+  <h3 style="color:var(--teal)">Akhila Kethireddy</h3>
+  <p>Personal Technical Portfolio | Python & AI Workflows</p>
+  <p>© <span id="year"></span></p>
+</footer>
+
+<div class="modal" id="taskModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-content">
+    <button class="close" onclick="closeModal()">✕ Close</button>
+    <p class="kicker" id="modalNumber"></p>
+    <h2 id="modalTitle"></h2>
+    <p id="modalDescription"></p>
+    <h3>Typical Workflow</h3>
+    <ul id="modalSteps"></ul>
+    <h3 style="color:var(--teal)">Technologies</h3>
+    <div id="modalTags"></div>
+    <p id="modalNote" class="note"></p>
+  </div>
+</div>
+
+<script>
+const tasks = [
+{n:1,t:"Mock API Parsing",d:"Parse sample API responses and extract required fields.",tags:["Python","API","JSON"],w:["Prepare sample API response","Parse the response","Extract required fields","Verify output"]},
+{n:2,t:"Prompt Templates",d:"Create reusable prompts for consistent model requests.",tags:["Python","LLM"],w:["Define task context","Build prompt template","Test sample inputs","Review responses"]},
+{n:3,t:"XML Prompt Framework",d:"Use XML tags to structure prompts and context.",tags:["XML","LLM"],w:["Define XML boundaries","Structure input","Send prompt","Inspect response"]},
+{n:4,t:"Google Schema Alignment",d:"Align structured data with a documented schema.",tags:["Schema","JSON"],w:["Identify schema fields","Map input values","Validate structure","Review output"]},
+{n:5,t:"Error Handling and Repair",d:"Handle request and parsing errors.",tags:["Python","Errors","JSON"],w:["Identify failures","Add exception handling","Validate output","Test error cases"]},
+{n:6,t:"SheetDB API Integration",d:"Integrate candidate records with a configured SheetDB API.",tags:["Python","SheetDB","API"],w:["Prepare payload","Call API","Inspect response","Verify record"]},
+{n:7,t:"End-to-End Pipeline",d:"Connect processing steps into a repeatable pipeline.",tags:["Python","Pipeline"],w:["Receive input","Process and validate","Store result","Check output"]},
+{n:8,t:"Batch Processing Validation",d:"Process a batch of records and validate each result.",tags:["Python","Batch"],w:["Load records","Process records","Collect errors","Summarize results"]},
+{n:9,t:"Telemetry Audit Logging",d:"Capture audit events and validation outcomes.",tags:["Telemetry","Audit Logs"],w:["Identify events","Prepare log fields","Write log entry","Verify stored data"]},
+{n:10,t:"Firebase Validation",d:"Connect validation outcomes to a Firebase workflow.",tags:["Firebase","Firestore"],w:["Configure connection","Validate record","Write test document","Verify fields"]},
+{n:11,t:"ActivityWatch Local Deployment",d:"Set up and inspect ActivityWatch and local watchers.",tags:["ActivityWatch","Deployment"],w:["Launch ActivityWatch","Check watcher status","Inspect buckets","Confirm event collection"]},
+{n:12,t:"Developer Focus Timeline Extraction",d:"Extract activity events and arrange them into a timeline.",tags:["ActivityWatch","Timeline"],w:["Read events","Normalize timestamps","Sort chronologically","Review output"]},
+{n:13,t:"Hourly Focus Metric Sync to Firebase",d:"Calculate focus metrics and explore hourly Firebase synchronization.",tags:["Firebase","Metrics"],w:["Collect events","Calculate metrics","Send payload","Verify stored data"]},
+{n:14,t:"Day 14 Task — Confirm Title",d:"The exact Day 14 task title needs confirmation from the original folder.",tags:["Day 14","Verify"],w:["Check original Day 14 folder","Confirm objective","Add technologies","Update portfolio title"]},
+{n:15,t:"Milestone Testing",d:"Test project milestones and expected checkpoints.",tags:["Testing","Milestones"],w:["Define checkpoints","Run tests","Record failures","Retest corrections"]},
+{n:16,t:"Audio Preprocessing",d:"Prepare audio inputs for speech-processing workflows.",tags:["Audio","Python"],w:["Load audio","Check format","Apply preprocessing","Inspect prepared audio"]},
+{n:17,t:"Whisper Transcription",d:"Transcribe audio using a configured Whisper workflow.",tags:["Whisper","Speech"],w:["Prepare audio","Configure dependencies","Run transcription","Review transcript"]},
+{n:18,t:"Whisper Anomaly Detection",d:"Explore unusual results in a Whisper-related workflow.",tags:["Whisper","Detection"],w:["Prepare data","Define expected behaviour","Check unusual output","Review findings"]},
+{n:19,t:"Azure Speech SDK",d:"Explore speech processing using the Azure Speech SDK.",tags:["Azure","Speech SDK"],w:["Configure SDK","Provide test audio","Run workflow","Inspect results"]},
+{n:20,t:"Azure Pronunciation API",d:"Explore pronunciation assessment through a speech API.",tags:["Azure","Pronunciation"],w:["Prepare reference text and audio","Call API","Inspect assessment","Review scores"]},
+{n:21,t:"Unscripted Speaking Evaluation",d:"Explore evaluating unscripted speech from audio outputs.",tags:["Speech","Evaluation"],w:["Prepare speech input","Process audio","Review metrics","Check output quality"]},
+{n:22,t:"Computer Vision & Real-Time Frame Processing",d:"Process video frames for computer-vision tasks.",tags:["Computer Vision","OpenCV"],w:["Read frames","Process frames","Extract signals","Check output"]},
+{n:23,t:"Facial Landmark and Iris Tracking",d:"Explore facial landmarks and iris tracking.",tags:["OpenCV","Iris"],w:["Read frames","Detect landmarks","Locate iris landmarks","Review tracking"]},
+{n:24,t:"Gaze Mathematics using OpenCV",d:"Explore gaze calculations using landmark data.",tags:["Gaze","OpenCV"],w:["Collect landmarks","Calculate positions","Apply gaze logic","Validate results"]},
+{n:25,t:"Multi-Threaded Execution Logging",d:"Explore logging for concurrent execution.",tags:["Python","Threads"],w:["Identify concurrent work","Add logs","Run test workload","Review execution"]},
+{n:26,t:"Combined Proctor Alert Logic Engine",d:"Combine selected signals into a rule-based alert workflow.",tags:["Proctoring","Alerts"],w:["Identify signals","Define alert conditions","Combine rules","Test scenarios"]},
+{n:27,t:"Firebase Telemetry Sync",d:"Sync telemetry data into a configured Firebase workflow.",tags:["Firebase","Telemetry"],w:["Prepare payload","Validate fields","Send data","Verify records"]},
+{n:28,t:"Frontend Telemetry Display",d:"Display available telemetry in a frontend dashboard.",tags:["Frontend","JavaScript"],w:["Fetch telemetry","Format results","Render dashboard","Test error states"]},
+{n:29,t:"System Optimization",d:"Review a workflow for performance and reliability improvements.",tags:["Optimization","Python"],w:["Review implementation","Identify bottlenecks","Apply changes","Compare results"]},
+{n:30,t:"Milestone Testing",d:"Verify project milestones and expected workflow behaviour.",tags:["Testing","Validation"],w:["List acceptance checks","Run tests","Record issues","Verify fixes"]},
+{n:31,t:"LLM Tool-Calling Concepts",d:"Explore how an LLM selects tools and prepares arguments.",tags:["LLM","Tool Calling"],w:["Define tools","Provide descriptions","Validate arguments","Inspect results"]},
+{n:32,t:"Day 32 Task — Confirm Title",d:"The exact Day 32 task title needs confirmation from the original folder.",tags:["Day 32","Verify"],w:["Check original Day 32 folder","Confirm objective","Add technologies","Update portfolio title"]},
+{n:33,t:"Reftab Asset Integration",d:"Explore asset lookup or integration with Reftab.",tags:["Reftab","Assets","API"],w:["Review asset fields","Configure access","Query asset data","Verify results"]},
+{n:34,t:"Apify Web Scraping Loop",d:"Explore repeated data collection using an Apify actor or API.",tags:["Apify","Scraping"],w:["Configure source","Run test collection","Inspect records","Handle failed runs"]},
+{n:35,t:"Autonomous Talent Scraping Loop",d:"Explore automated collection of permitted job or talent information.",tags:["Automation","Talent"],w:["Define fields","Collect permitted data","Normalize records","Review results"]},
+{n:36,t:"Resume Matching Matrix",d:"Compare resume information with role requirements.",tags:["Resume","Matching"],w:["Extract resume fields","Define requirements","Compare criteria","Present summary"]},
+{n:37,t:"Agentic Fail-Safe Counter Protection",d:"Explore fail-safe logic around agent actions.",tags:["AI Agents","Fail-Safe"],w:["Define permitted actions","Track limits","Handle unsafe conditions","Test fallbacks"]},
+{n:38,t:"Ticketing API",d:"Explore creating or processing ticket records through an API.",tags:["Ticketing","REST API"],w:["Prepare ticket fields","Call endpoint","Inspect response","Verify result"]},
+{n:39,t:"AI Help Desk Agent",d:"Explore an AI help-desk workflow for user requests.",tags:["AI Agent","Help Desk"],w:["Receive request","Interpret intent","Validate action","Return response"]},
+{
+    n: 40,
+    t: "PII Data Cleansing",
+    d: "Identify, clean, mask and validate Personally Identifiable Information (PII) in data records.",
+    tags: ["PII", "Data Cleansing", "Python", "Regex", "Data Privacy"],
+    w: [
+        "Load input data records",
+        "Identify sensitive information such as email, phone number and PAN",
+        "Validate data formats",
+        "Mask or redact sensitive values",
+        "Check cleaned data and validate the output"
+    ],
+    note: "Use sample or authorized data. Mask sensitive values before displaying or storing them."
+}
+];
+
+const projects = {
+ team:{
+  title:"Team Activity Monitoring System",
+  description:"Collect activity events, process metrics, store records and display dashboard summaries.",
+  tags:["Python","ActivityWatch","FastAPI","Supabase","HTML/CSS/JavaScript"],
+  w:["ActivityWatch collects available local events","tracker.py processes events and activity metrics","FastAPI receives tracker data","Supabase stores records when configured","Dashboard presents activity summaries"],
+  note:"Describe it as a live system only after confirming the components are connected and working."
+ },
+ vpn:{
+  title:"VPN Configuration & Security",
+  description:"A separate project for VPN setup, configuration, connection testing and network troubleshooting.",
+  tags:["VPN","Networking","Security"],
+  w:["Identify requirements and the VPN tool","Configure using authorized settings","Test the connection","Review connectivity and security","Document verified results"],
+  note:"Add the exact VPN technology and implementation details after confirming the tool used."
+ }
+};
+
+function escapeHTML(value){
+ return String(value).replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ })[c]);
+}
+
+function renderTasks(){
+ const query=document.getElementById("search").value.trim().toLowerCase();
+ const filtered=tasks.filter(task=>
+  [task.t,task.d,...task.tags].join(" ").toLowerCase().includes(query)
+ );
+ document.getElementById("taskGrid").innerHTML=filtered.map(task=>`
+  <article class="task-card">
+   <div class="task-number">DAY ${String(task.n).padStart(2,"0")}</div>
+   <h3>${escapeHTML(task.t)}</h3>
+   <p>${escapeHTML(task.d)}</p>
+   <div class="tags">${task.tags.map(tag=>`<span class="tag">${escapeHTML(tag)}</span>`).join("")}</div>
+   <button class="details-btn" data-task="${task.n}">View Task Details ↗</button>
+  </article>
+ `).join("");
+ document.getElementById("resultCount").textContent=`${filtered.length} of ${tasks.length} tasks`;
+ document.getElementById("empty").style.display=filtered.length?"none":"block";
+}
+
+function showDetails(data,label){
+ document.getElementById("modalNumber").textContent=label;
+ document.getElementById("modalTitle").textContent=data.title||data.t;
+ document.getElementById("modalDescription").textContent=data.description||data.d;
+ document.getElementById("modalSteps").innerHTML=data.w.map(step=>`<li>${escapeHTML(step)}</li>`).join("");
+ document.getElementById("modalTags").innerHTML=data.tags.map(tag=>`<span class="tag">${escapeHTML(tag)}</span>`).join("");
+ document.getElementById("modalNote").textContent=data.note||"This summary is based on the available task title. Confirm the actual code and results against your task documentation.";
+ document.getElementById("taskModal").classList.add("open");
+}
+
+function openProject(key){
+ if(projects[key]) showDetails(projects[key],"MAJOR PROJECT");
+}
+
+function closeModal(){
+ document.getElementById("taskModal").classList.remove("open");
+}
+
+document.getElementById("taskGrid").addEventListener("click",event=>{
+ const button=event.target.closest("[data-task]");
+ if(!button)return;
+ const task=tasks.find(item=>item.n===Number(button.dataset.task));
+ if(task)showDetails({...task,title:task.t},"DAY "+String(task.n).padStart(2,"0"));
+});
+
+document.getElementById("search").addEventListener("input",renderTasks);
+
+document.getElementById("taskModal").addEventListener("click",event=>{
+ if(event.target.id==="taskModal")closeModal();
+});
+
+document.addEventListener("keydown",event=>{
+ if(event.key==="Escape")closeModal();
+});
+
+document.getElementById("year").textContent=new Date().getFullYear();
+renderTasks();
+</script>
+</body>
+</html>

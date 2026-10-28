@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Day 10 - Candidate Validation</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            background: #f2f4f7;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        input {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #125ca5;
+        }
+
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #1976d2;
+            color: white;
+        }
+
+        .valid {
+            color: green;
+            font-weight: bold;
+        }
+
+        .invalid {
+            color: red;
+            font-weight: bold;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>Candidate Validation</h1>
+
+
+    <div class="form">
+
+        <input
+            type="number"
+            id="candidate_id"
+            placeholder="Candidate ID"
+        >
+
+        <input
+            type="text"
+            id="name"
+            placeholder="Candidate Name"
+        >
+
+        <input
+            type="text"
+            id="pan"
+            placeholder="PAN (ABCDE1234F)"
+        >
+
+        <input
+            type="text"
+            id="dob"
+            placeholder="DOB (DD-MM-YYYY)"
+        >
+
+    </div>
+
+
+    <button
+        id="saveButton"
+        onclick="validateAndSave()"
+    >
+        Validate & Save
+    </button>
+
+
+    <div id="message"></div>
+
+
+    <h2>Candidate Records</h2>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>ID</th>
+                <th>Name</th>
+                <th>PAN</th>
+                <th>DOB</th>
+                <th>PAN Status</th>
+                <th>DOB Status</th>
+                <th>Timestamp</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody id="candidateTable">
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+
+<script>
+
+
+// ==================================================
+// SHEETDB URL
+// ==================================================
+
+const SHEETDB_URL =
+"https://sheetdb.io/api/v1/qywhfkqf6fmgc";
+
+
+
+// ==================================================
+// PAN VALIDATION
+// ==================================================
+
+function validatePAN(pan) {
+
+    const pattern =
+        /^[A-Z]{5}[0-9]{4}[A-Z]$/;
+
+    return pattern.test(pan);
+
+}
+
+
+
+// ==================================================
+// DOB VALIDATION
+// ==================================================
+
+function validateDOB(dob) {
+
+    const pattern =
+        /^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-[0-9]{4}$/;
+
+    return pattern.test(dob);
+
+}
+
+
+
+// ==================================================
+// VALIDATE AND SAVE
+// ==================================================
+
+async function validateAndSave() {
+
+
+    const button =
+        document.getElementById("saveButton");
+
+
+    // Prevent double click
+
+    button.disabled = true;
+
+    button.innerText = "Checking...";
+
+
+    try {
+
+
+        // ==================================================
+        // GET INPUT VALUES
+        // ==================================================
+
+        const candidate_id =
+            document
+            .getElementById("candidate_id")
+            .value
+            .trim();
+
+
+        const name =
+            document
+            .getElementById("name")
+            .value
+            .trim();
+
+
+        const pan =
+            document
+            .getElementById("pan")
+            .value
+            .trim()
+            .toUpperCase();
+
+
+        const dob =
+            document
+            .getElementById("dob")
+            .value
+            .trim();
+
+
+
+        // ==================================================
+        // EMPTY FIELD CHECK
+        // ==================================================
+
+        if (
+            !candidate_id ||
+            !name ||
+            !pan ||
+            !dob
+        ) {
+
+            throw new Error(
+                "Please fill all fields."
+            );
+
+        }
+
+
+
+        // ==================================================
+        // GET ALL EXISTING SHEETDB RECORDS
+        // ==================================================
+
+        const getResponse =
+            await fetch(
+                SHEETDB_URL
+            );
+
+
+        if (!getResponse.ok) {
+
+            throw new Error(
+                "Unable to check existing records."
+            );
+
+        }
+
+
+        const existingCandidates =
+            await getResponse.json();
+
+
+
+        // ==================================================
+        // DUPLICATE CANDIDATE ID CHECK
+        // ==================================================
+
+        const duplicate =
+            existingCandidates.some(
+                candidate =>
+
+                String(
+                    candidate.candidate_id || ""
+                ).trim() === candidate_id
+            );
+
+
+
+        if (duplicate) {
+
+            document
+            .getElementById("message")
+            .innerHTML =
+
+            "<span class='invalid'>" +
+
+            "Candidate ID " +
+            candidate_id +
+            " already exists. " +
+
+            "Duplicate data was NOT saved." +
+
+            "</span>";
+
+
+            return;
+
+        }
+
+
+
+        // ==================================================
+        // PAN VALIDATION
+        // ==================================================
+
+        const panStatus =
+            validatePAN(pan)
+            ? "VALID"
+            : "INVALID";
+
+
+
+        // ==================================================
+        // DOB VALIDATION
+        // ==================================================
+
+        const dobStatus =
+            validateDOB(dob)
+            ? "VALID"
+            : "INVALID";
+
+
+
+        // ==================================================
+        // TIMESTAMP
+        // ==================================================
+
+        const timestamp =
+            new Date()
+            .toLocaleString();
+
+
+
+        // ==================================================
+        // CREATE DATA
+        // ==================================================
+
+        const data = {
+
+            candidate_id:
+                candidate_id,
+
+            name:
+                name,
+
+            pan:
+                pan,
+
+            dob:
+                dob,
+
+            pan_status:
+                panStatus,
+
+            dob_status:
+                dobStatus,
+
+            timestamp:
+                timestamp
+
+        };
+
+
+
+        // ==================================================
+        // SAVE TO SHEETDB
+        // ==================================================
+
+        button.innerText =
+            "Saving...";
+
+
+        const response =
+            await fetch(
+
+                SHEETDB_URL,
+
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            data: data
+
+                        })
+
+                }
+
+            );
+
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to save data."
+            );
+
+        }
+
+
+
+        // ==================================================
+        // SUCCESS
+        // ==================================================
+
+        document
+        .getElementById("message")
+        .innerHTML =
+
+        "<span class='valid'>" +
+
+        "Data saved successfully!" +
+
+        "</span>";
+
+
+
+        // ==================================================
+        // CLEAR FORM
+        // ==================================================
+
+        document
+        .getElementById("candidate_id")
+        .value = "";
+
+
+        document
+        .getElementById("name")
+        .value = "";
+
+
+        document
+        .getElementById("pan")
+        .value = "";
+
+
+        document
+        .getElementById("dob")
+        .value = "";
+
+
+
+        // Reload table
+
+        await loadCandidates();
+
+
+    }
+
+
+    catch (error) {
+
+
+        console.error(error);
+
+
+        document
+        .getElementById("message")
+        .innerHTML =
+
+        "<span class='invalid'>" +
+
+        error.message +
+
+        "</span>";
+
+    }
+
+
+    finally {
+
+        button.disabled = false;
+
+        button.innerText =
+            "Validate & Save";
+
+    }
+
+}
+
+
+
+// ==================================================
+// LOAD CANDIDATES
+// ==================================================
+
+async function loadCandidates() {
+
+    try {
+
+
+        const response =
+            await fetch(
+                SHEETDB_URL
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load records."
+            );
+
+        }
+
+
+        const candidates =
+            await response.json();
+
+
+        const table =
+            document
+            .getElementById(
+                "candidateTable"
+            );
+
+
+        table.innerHTML = "";
+
+
+
+        // ==================================================
+        // DISPLAY RECORDS
+        // ==================================================
+
+        candidates.forEach(
+            candidate => {
+
+
+                const row =
+                    document
+                    .createElement("tr");
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${candidate.candidate_id || ""}
+                    </td>
+
+                    <td>
+                        ${candidate.name || ""}
+                    </td>
+
+                    <td>
+                        ${candidate.pan || ""}
+                    </td>
+
+                    <td>
+                        ${candidate.dob || ""}
+                    </td>
+
+                    <td class="${
+                        candidate.pan_status === "VALID"
+                        ? "valid"
+                        : "invalid"
+                    }">
+
+                        ${candidate.pan_status || ""}
+
+                    </td>
+
+                    <td class="${
+                        candidate.dob_status === "VALID"
+                        ? "valid"
+                        : "invalid"
+                    }">
+
+                        ${candidate.dob_status || ""}
+
+                    </td>
+
+                    <td>
+                        ${candidate.timestamp || ""}
+                    </td>
+
+                `;
+
+
+                table.appendChild(row);
+
+
+            }
+        );
+
+
+    }
+
+
+    catch (error) {
+
+        console.log(
+            "Unable to load candidates:",
+            error
+        );
+
+    }
+
+}
+
+
+
+// ==================================================
+// LOAD DATA WHEN PAGE OPENS
+// ==================================================
+
+loadCandidates();
+
+</script>
+
+
+</body>
+
+</html>

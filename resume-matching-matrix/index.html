@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 36 - Candidate Evaluation Dashboard</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f3f6fb;
+  color: #1e293b;
+}
+
+header {
+  background: linear-gradient(120deg, #172554, #2563eb);
+  color: white;
+  padding: 28px 5%;
+}
+
+header h1 {
+  font-size: 27px;
+  margin-bottom: 9px;
+}
+
+header p {
+  color: #dbeafe;
+  line-height: 1.6;
+}
+
+main {
+  max-width: 1150px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.panel {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 22px;
+  box-shadow: 0 4px 14px #00000008;
+}
+
+.panel h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+textarea, input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  margin-bottom: 18px;
+  background: #fff;
+  color: #1e293b;
+}
+
+textarea {
+  min-height: 125px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+button {
+  border: none;
+  border-radius: 8px;
+  padding: 12px 19px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.primary {
+  background: #2563eb;
+  color: white;
+}
+
+.primary:hover {
+  background: #1d4ed8;
+}
+
+.secondary {
+  background: #e2e8f0;
+  color: #334155;
+  margin-left: 8px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.stat-card {
+  background: white;
+  padding: 22px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.stat-card p {
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.stat-card h2 {
+  color: #2563eb;
+  font-size: 28px;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.result-card {
+  padding: 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.result-card h3 {
+  font-size: 16px;
+  margin-bottom: 14px;
+}
+
+.result-card p {
+  font-size: 14px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.score {
+  font-size: 34px;
+  font-weight: bold;
+  color: #2563eb;
+}
+
+.progress {
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: #2563eb;
+  transition: width 0.3s;
+}
+
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill {
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 20px;
+  padding: 7px 11px;
+  font-size: 12px;
+}
+
+.skill.missing {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.recommendation {
+  padding: 12px 15px;
+  border-radius: 8px;
+  display: inline-block;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.potential {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.not-match {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.status {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 15px;
+}
+
+.hidden {
+  display: none;
+}
+
+footer {
+  text-align: center;
+  padding: 28px 15px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+@media (max-width: 700px) {
+  .stats, .result-grid {
+    grid-template-columns: 1fr;
+  }
+
+  header h1 {
+    font-size: 23px;
+  }
+
+  .panel {
+    padding: 18px;
+  }
+
+  .secondary {
+    margin: 10px 0 0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Candidate Evaluation Dashboard</h1>
+  <p>Day 36 - AI-powered recruitment assistance using OpenRouter</p>
+</header>
+
+<main>
+
+  <section class="stats">
+    <div class="stat-card">
+      <p>Candidate</p>
+      <h2 id="candidateStat">Akhila</h2>
+    </div>
+
+    <div class="stat-card">
+      <p>Matching Score</p>
+      <h2 id="scoreStat">--</h2>
+    </div>
+
+    <div class="stat-card">
+      <p>Recommendation</p>
+      <h2 id="recommendationStat">Pending</h2>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Candidate Evaluation Input</h2>
+
+    <label for="candidateName">Candidate Name</label>
+    <input id="candidateName" value="Akhila"
+           placeholder="Enter candidate name">
+
+    <label for="jobDescription">Job Description</label>
+    <textarea id="jobDescription">Job Title: Java Developer
+
+Required Skills:
+- Java programming
+- Spring Boot
+- Hibernate
+- SQL
+- REST API development
+- 2 years of Java development experience</textarea>
+
+    <label for="resume">Candidate Resume</label>
+    <textarea id="resume">Name: Akhila
+Experience: 2 years
+
+Skills:
+- Python
+- SQL
+- REST APIs
+- Git</textarea>
+
+    <button class="primary" id="evaluateBtn">
+      Evaluate Candidate
+    </button>
+
+    <button class="secondary" id="sampleBtn">
+      Load Sample
+    </button>
+
+    <p class="status" id="status" style="margin-top:15px">
+      Sample input loaded. Connect the Python backend to run a real AI evaluation.
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>Evaluation Report</h2>
+
+    <div id="emptyState" class="status">
+      Evaluation result will appear here after you provide an evaluation result.
+      This standalone page does not call the AI API.
+    </div>
+
+    <div id="report" class="hidden">
+      <div class="score-row">
+        <div>
+          <p class="status">Candidate Matching Score</p>
+          <div class="score" id="scoreValue">0%</div>
+        </div>
+        <div id="recommendationBadge"
+             class="recommendation">Pending</div>
+      </div>
+
+      <div class="progress">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <div class="result-grid">
+        <div class="result-card">
+          <h3>Matched Skills</h3>
+          <div class="skills" id="matchedSkills"></div>
+        </div>
+
+        <div class="result-card">
+          <h3>Missing Skills / Not Evidenced</h3>
+          <div class="skills" id="missingSkills"></div>
+        </div>
+
+        <div class="result-card">
+          <h3>Experience Comparison</h3>
+          <p id="experience"></p>
+        </div>
+
+        <div class="result-card">
+          <h3>AI Evaluation Summary</h3>
+          <p id="summary"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Day 36 - Candidate Evaluation Agent | OpenRouter AI
+</footer>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+const sampleJob = `Job Title: Java Developer
+
+Required Skills:
+- Java programming
+- Spring Boot
+- Hibernate
+- SQL
+- REST API development
+- 2 years of Java development experience`;
+
+const sampleResume = `Name: Akhila
+Experience: 2 years
+
+Skills:
+- Python
+- SQL
+- REST APIs
+- Git`;
+
+function showText(id, value) {
+  $(id).textContent =
+    value === null || value === undefined || value === ""
+      ? "Not provided"
+      : String(value);
+}
+
+function renderSkills(id, skills, missing = false) {
+  const container = $(id);
+  container.replaceChildren();
+
+  if (!Array.isArray(skills) || skills.length === 0) {
+    container.appendChild(
+      Object.assign(document.createElement("span"), {
+        className: "status",
+        textContent: "No skills listed"
+      })
+    );
+    return;
+  }
+
+  skills.forEach(skill => {
+    const tag = document.createElement("span");
+    tag.className = missing ? "skill missing" : "skill";
+    tag.textContent = String(skill);
+    container.appendChild(tag);
+  });
+}
+
+function renderReport(result) {
+  const score = Number(result.matching_score);
+
+  if (!Number.isInteger(score) || score < 0 || score > 100) {
+    throw new Error("Matching score must be an integer from 0 to 100.");
+  }
+
+  const recommendation =
+    score >= 70 ? "Potential Match" : "Not a Match";
+
+  showText("candidateStat", result.candidate_name);
+  showText("scoreStat", score + "%");
+  showText("recommendationStat", recommendation);
+  showText("scoreValue", score + "%");
+  showText("experience", result.experience_comparison);
+  showText("summary", result.evaluation_summary);
+
+  renderSkills("matchedSkills", result.matched_skills);
+  renderSkills("missingSkills", result.missing_skills, true);
+
+  $("progressBar").style.width = score + "%";
+
+  const badge = $("recommendationBadge");
+  badge.textContent = recommendation;
+  badge.className = "recommendation " +
+    (score >= 70 ? "potential" : "not-match");
+
+  $("emptyState").classList.add("hidden");
+  $("report").classList.remove("hidden");
+}
+
+$("sampleBtn").addEventListener("click", () => {
+  $("candidateName").value = "Akhila";
+  $("jobDescription").value = sampleJob;
+  $("resume").value = sampleResume;
+  $("status").textContent = "Sample input loaded.";
+});
+
+$("evaluateBtn").addEventListener("click", () => {
+  $("status").textContent =
+    "Frontend ready. Connect a backend endpoint to run the real AI evaluation.";
+  $("emptyState").classList.remove("hidden");
+  $("report").classList.add("hidden");
+
+  // This page does not call OpenRouter directly.
+  // The backend must receive the inputs, run your Python
+  // evaluate_candidate() function, and return its JSON result.
+});
+
+// Optional demo report: click the button to test the UI only.
+const demoButton = document.createElement("button");
+demoButton.className = "secondary";
+demoButton.textContent = "Preview Demo Report";
+demoButton.style.marginTop = "12px";
+$("evaluateBtn").parentElement.appendChild(demoButton);
+
+demoButton.addEventListener("click", () => {
+  renderReport({
+    candidate_name: $("candidateName").value || "Akhila",
+    matching_score: 50,
+    matched_skills: ["SQL", "REST API development"],
+    missing_skills: ["Java", "Spring Boot", "Hibernate"],
+    experience_comparison:
+      "The resume states 2 years of experience but does not specify Java development experience.",
+    recommendation: "Not a Match",
+    evaluation_summary:
+      "Demo preview only. The resume mentions SQL and REST APIs. Java, Spring Boot and Hibernate are not evidenced in the supplied resume. This is not an actual AI evaluation."
+  });
+
+  $("status").textContent =
+    "Demo preview displayed. This is sample data, not an AI-generated result.";
+});
+</script>
+
+</body>
+</html>
